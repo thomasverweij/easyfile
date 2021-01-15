@@ -1,5 +1,12 @@
 
 minio:
-  accesskey: ${MINIO_ACCESS_KEY}
-  secretKey: ${MINIO_SECRET_KEY}
-  endpointUrl: ${MINIO_URL}
+  accesskey: ${MINIO_ACCESS_KEY:minio}
+  secretKey: ${MINIO_SECRET_KEY:minio123}
+  endpointUrl: ${MINIO_URL:http://localhost:9000}
+
+# Max file size.
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB

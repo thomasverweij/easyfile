@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public class BucketDto {
     private UUID id;
-    private List<FileMetadata> files;
+    private List<FileMetadataDto> files;
 
     public BucketDto() {};
 
-    public BucketDto(UUID id, List<FileMetadata> files) {
+    public BucketDto(UUID id, List<FileMetadataDto> files) {
         this.id = id;
         this.files = files;
     }
@@ -27,11 +27,11 @@ public class BucketDto {
         this.id = id;
     }
 
-    public List<FileMetadata> getFiles() {
+    public List<FileMetadataDto> getFiles() {
         return files;
     }
 
-    public void setFiles(List<FileMetadata> files) {
+    public void setFiles(List<FileMetadataDto> files) {
         this.files = files;
     }
 

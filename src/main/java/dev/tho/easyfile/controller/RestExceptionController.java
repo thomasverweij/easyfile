@@ -1,6 +1,7 @@
 package dev.tho.easyfile.controller;
 
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import dev.tho.easyfile.exception.EntityNotFoundException;
 import dev.tho.easyfile.exception.ErrorMessage;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +41,13 @@ public class RestExceptionController extends ResponseEntityExceptionHandler {
     }
 
 
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity handleInvalidFormatException(InvalidFormatException e) {
+        ErrorMessage errorMessage = new ErrorMessage(
+                HttpStatus.BAD_REQUEST, "Bad request");
+        return new ResponseEntity<Object>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+    }
 
 
 //    @ExceptionHandler({ Exception.class })

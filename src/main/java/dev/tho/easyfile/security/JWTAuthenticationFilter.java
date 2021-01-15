@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static dev.tho.easyfile.config.SecurityConstants.*;
@@ -33,18 +34,21 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
+
+        UUID username = UUID.randomUUID();
+        String password = "";
         try {
             Bucket bucket = new ObjectMapper().readValue(req.getInputStream(), Bucket.class);
-
-            return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            bucket.getId(),
-                            bucket.getPassword(),
-                            new ArrayList<>())
-            );
+            username = bucket.getId();
+            password = bucket.getPassword();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("User supplied credentials have invalid format");
         }
+
+        return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>())
+            );
+
     }
 
     @Override
@@ -57,6 +61,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withSubject(((User) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
+        res.addHeader("Access-Control-Allow-Headers",HEADER_STRING);
+        res.addHeader("Access-Control-Expose-Headers", HEADER_STRING);
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
     }
 }
