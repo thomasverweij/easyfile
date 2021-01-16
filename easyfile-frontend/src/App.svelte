@@ -4,23 +4,24 @@
 	import BucketLogin from "./BucketLogin.svelte"
 	import { onMount } from 'svelte';
 	import { getBucket, getToken, createBucket } from './api.js';
+	import { tokenStore } from './store.js'
 
-	let token = localStorage.getItem('token') || undefined;
 	let bucketId = window.location.hash.split('#')[1] || undefined;
 
-	$: if(token) {
-		localStorage.setItem('token', token);
-	}
+	tokenStore.subscribe(value => {
+		localStorage.setItem("token", value);
+
+		});
 
 </script>
 <main>
 	<h2 class="title"><a href="/">EasyFile</a></h2>
-	{#if !bucketId && !token}
-		<CreateBucket bind:bucketId={bucketId} bind:token={token} />
-	{:else if !token}
-		<BucketLogin bind:bucketId={bucketId} bind:token={token} />
+	{#if !bucketId && !$tokenStore}
+		<CreateBucket bind:bucketId={bucketId} />
+	{:else if !$tokenStore}
+		<BucketLogin bind:bucketId={bucketId} />
 	{:else}
-		<Bucket bucketId={bucketId} token={token} />
+		<Bucket bucketId={bucketId} />
 	{/if}
 </main>
 
@@ -39,6 +40,11 @@
 		background-color:  rgb(233, 233, 233);
 		border: none;
 	}
+
+	:global(a), :global(a:visited) {	
+		color: rgb(107, 107, 107);
+	}
+
 
 	h2 {
 		text-align: center;

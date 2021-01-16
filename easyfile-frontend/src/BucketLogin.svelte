@@ -1,16 +1,18 @@
 <script>
     import { getToken } from './api.js';
-    
+    import { tokenStore } from './store.js'
+
     export let bucketId;
-    export let token;
     let password;
-    let status;
+
 
     async function login() {
         let response = await getToken(bucketId, password)
             .catch(() => alert("something went wrong"))
         if (response.status == 200) {
-            token = response.token
+            tokenStore.set(response.token)
+        } else if (response.status == 401) {
+            alert("access denied")
         }
         status = response.status
     }
@@ -30,9 +32,6 @@
         <button on:click={login} >Ok</button>
     </p>
 </div>
-{#if status == 401} 
-<p>access denied</p>
-{/if}
 
 <style>
 #login {

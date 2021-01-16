@@ -1,8 +1,8 @@
 <script>
-import { createBucketAndLogin } from './api.js';
+    import { createBucketAndLogin } from './api.js';
+    import { tokenStore } from './store.js'
 
     export let bucketId;
-    export let token;
     let password;
     let loading = false;
 
@@ -12,7 +12,7 @@ import { createBucketAndLogin } from './api.js';
             .finally(() => loading = false)
             .catch(() => alert("could not create bucket"))
         bucketId = bucket.id;
-        token = bucket.token;
+        tokenStore.set(bucket.token);
     }
 
 </script>
