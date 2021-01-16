@@ -1,6 +1,6 @@
-const URL = "http://localhost:8080"
+const BACKEND = "http://localhost:8080"
 
-export async function getBucket(bucketId, token) {
+export async function getBucket(token) {
     let headers = new Headers();
     headers.append("Authorization", token);
 
@@ -10,7 +10,7 @@ export async function getBucket(bucketId, token) {
         redirect: 'follow'
     };
 
-    const response = await fetch(URL + "/bucket", requestOptions)
+    const response = await fetch(BACKEND + "/bucket", requestOptions)
     if (response.status === 200) {
         return await response.json();
     } else {
@@ -28,7 +28,7 @@ export async function getToken(bucketId, password) {
         body: raw,
         redirect: 'follow'
     };
-    const response = await fetch(URL + "/login", requestOptions)
+    const response = await fetch(BACKEND + "/login", requestOptions)
     if (response.status === 200) {
         let token = response.headers.get("Authorization")
         return {status: response.status, token: token}
@@ -49,7 +49,7 @@ export async function createBucket(password) {
         body: raw,
         redirect: 'follow'
     };
-    const response = await fetch(URL+ "/bucket", requestOptions);
+    const response = await fetch(BACKEND + "/bucket", requestOptions);
     if (response.status === 200) {
         return await response.json()
     } else {
@@ -60,7 +60,6 @@ export async function createBucket(password) {
 export async function createBucketAndLogin(password) {
     let bucket = await createBucket(password)
     let token = await getToken(bucket.id, password)
-    console.log(token)
     return {id: bucket.id, token: token.token}
 }
 
@@ -77,11 +76,26 @@ export async function uploadFile(file, token) {
         redirect: 'follow'
     };
 
-    const response = await fetch("http://localhost:8080/file", requestOptions);
+    const response = await fetch(BACKEND + "/file", requestOptions);
     if (response.status === 200) {
         return await response.json()
     } else {
         throw new Error(response.statusText)
     }
+}
+export async function downloadFile(fileId, token) {
+    let headers = new Headers();
+    headers.append("Authorization", token);
+    var requestOptions = {
+    method: 'GET',
+    headers: headers,
+    redirect: 'follow'
+    };
 
+    const response = await fetch(BACKEND + "/download?fileId=" + fileId, requestOptions);
+    if (response.status === 200) {
+        return await response.blob()
+    } else {
+        throw new Error(response.statusText)
+    }
 }
