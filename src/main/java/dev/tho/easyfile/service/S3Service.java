@@ -32,7 +32,7 @@ public class S3Service {
                             .build()
             );
         } catch (Exception e) {
-            throw new Exception();
+            throw e;
         }
     }
 

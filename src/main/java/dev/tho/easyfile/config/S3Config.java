@@ -8,20 +8,20 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class S3Config {
 
-    @Value("${minio.accesskey:minio}")
+    @Value("${minio.accesskey}")
     private String accessKey;
 
-    @Value("${minio.secretKey:minio123}")
+    @Value("${minio.secretKey}")
     private String secretKey;
 
-    @Value("${minio.endpointUrl:localhost:9000}")
+    @Value("${minio.endpointUrl}")
     private String endpointUrl;
 
     @Bean
     public MinioClient getS3Client() {
         return MinioClient.builder()
-                .endpoint("http://localhost:9000")
-                .credentials("minio", "minio123")
+                .endpoint(endpointUrl)
+                .credentials(accessKey, secretKey)
                 .build();
     }
 }

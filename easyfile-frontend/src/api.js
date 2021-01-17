@@ -1,4 +1,4 @@
-const BACKEND = "http://localhost:8080"
+const BACKEND = __APP__.env.backend;
 
 export async function getBucket(token) {
     let headers = new Headers();

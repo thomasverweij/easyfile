@@ -1,0 +1,17 @@
+minio:
+  accesskey: minio
+  secretKey: minio123
+  endpointUrl: http://localhost:9000
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyfiledb
+    username: postgres
+    password: postgres123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB

@@ -4,7 +4,7 @@
 	import BucketLogin from "./BucketLogin.svelte"
 	import { onMount } from 'svelte';
 	import { getBucket, getToken, createBucket } from './api.js';
-	import { tokenStore } from './store.js'
+	import { tokenStore } from './store.js';
 
 	let bucketId = window.location.hash.split('#')[1] || undefined;
 
@@ -12,10 +12,12 @@
 		localStorage.setItem("token", value);
 
 		});
+	
 
 </script>
 <main>
 	<h2 class="title"><a href="/">EasyFile</a></h2>
+	<div id="logo"></div>
 	{#if !bucketId && !$tokenStore}
 		<CreateBucket bind:bucketId={bucketId} />
 	{:else if !$tokenStore}
@@ -27,7 +29,7 @@
 
 <style>
 	:global(body) {
-		background-color: rgb(233, 233, 233);
+		/* background-color: rgb(233, 233, 233); */
 		color:rgb(97, 97, 97);
 	}
 
@@ -45,11 +47,15 @@
 		color: rgb(107, 107, 107);
 	}
 
-
 	h2 {
+		font-family: IBM Plex Mono;
 		text-align: center;
 		color: rgb(107, 107, 107);
-		margin: 40px;
+	}
+
+	#logo {
+		text-align: center;
+		margin: 20px;
 	}
 
 	a {

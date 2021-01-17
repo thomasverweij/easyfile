@@ -1,4 +1,5 @@
 import svelte from 'rollup-plugin-svelte';
+import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
@@ -43,6 +44,13 @@ export default {
 				dev: !production
 			}
 		}),
+		replace({
+			__APP__: JSON.stringify({
+				env: {
+				  backend: process.env.EASYFILE_BACKEND ? process.env.EASYFILE_BACKEND : "http://localhost:8080",
+				}
+			  })
+		  }),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
 		css({ output: 'bundle.css' }),
