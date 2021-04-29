@@ -43,7 +43,7 @@ services:
     environment:
       EASYFILE_BACKEND: http://localhost:8080
     ports:
-      - "5000:5000"
+      - "80:5000"
 
 volumes:
   data1:

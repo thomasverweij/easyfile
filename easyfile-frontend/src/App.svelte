@@ -12,7 +12,6 @@
 		localStorage.setItem("token", value);
 
 		});
-	
 
 </script>
 <main>
@@ -48,9 +47,10 @@
 	}
 
 	h2 {
-		font-family: IBM Plex Mono;
+		font-family: Didot;
+		font-size: 40pt;
 		text-align: center;
-		color: rgb(107, 107, 107);
+		color: rgb(77, 77, 77);
 	}
 
 	#logo {
