@@ -1,4 +1,4 @@
-const BACKEND = __APP__.env.backend;
+const API = 'api'
 
 export async function getBucket(token) {
     let headers = new Headers();
@@ -10,7 +10,7 @@ export async function getBucket(token) {
         redirect: 'follow'
     };
 
-    const response = await fetch(BACKEND + "/bucket", requestOptions)
+    const response = await fetch(API + "/bucket", requestOptions)
     if (response.status === 200) {
         return await response.json();
     } else {
@@ -28,7 +28,7 @@ export async function getToken(bucketId, password) {
         body: raw,
         redirect: 'follow'
     };
-    const response = await fetch(BACKEND + "/login", requestOptions)
+    const response = await fetch(API + "/login", requestOptions)
     if (response.status === 200) {
         let token = response.headers.get("Authorization")
         return {status: response.status, token: token}
@@ -49,7 +49,7 @@ export async function createBucket(password) {
         body: raw,
         redirect: 'follow'
     };
-    const response = await fetch(BACKEND + "/bucket", requestOptions);
+    const response = await fetch(API + "/bucket", requestOptions);
     if (response.status === 200) {
         return await response.json()
     } else {
@@ -76,7 +76,7 @@ export async function uploadFile(file, token) {
         redirect: 'follow'
     };
 
-    const response = await fetch(BACKEND + "/file", requestOptions);
+    const response = await fetch(API + "/file", requestOptions);
     if (response.status === 200) {
         return await response.json()
     } else {
@@ -92,7 +92,7 @@ export async function downloadFile(fileId, token) {
     redirect: 'follow'
     };
 
-    const response = await fetch(BACKEND + "/download?fileId=" + fileId, requestOptions);
+    const response = await fetch(API + "/download?fileId=" + fileId, requestOptions);
     if (response.status === 200) {
         return await response.blob()
     } else {

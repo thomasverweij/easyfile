@@ -44,13 +44,6 @@ export default {
 				dev: !production
 			}
 		}),
-		replace({
-			__APP__: JSON.stringify({
-				env: {
-				  backend: process.env.EASYFILE_BACKEND ? process.env.EASYFILE_BACKEND : "http://localhost:8080",
-				}
-			  })
-		  }),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
 		css({ output: 'bundle.css' }),

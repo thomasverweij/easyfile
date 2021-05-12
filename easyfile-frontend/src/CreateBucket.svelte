@@ -21,7 +21,8 @@
     <p>Create new bucket</p>
     <p>
         <input 
-            type="password" 
+            type="password"
+            class="password"
             placeholder="password" 
             bind:value={password} 
             on:keyup|preventDefault={(e) => e.code == 'Enter' ? setBucket() : false}
@@ -48,6 +49,10 @@
     animation: toVisible 0s 1s forwards;
     visibility: hidden;
   }
+
+.password {
+    width: 60%;
+}
   
   @keyframes toVisible {
     to   { visibility: visible; }
