@@ -44,6 +44,13 @@ export default {
 				dev: !production
 			}
 		}),
+		replace({
+			__APP__: JSON.stringify({
+				env: {
+				  prefix: process.env.EASYFILE_BACKEND ? process.env.EASYFILE_BACKEND : "/api",
+				}
+			  })
+		  }),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
 		css({ output: 'bundle.css' }),

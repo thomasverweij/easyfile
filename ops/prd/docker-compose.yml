@@ -39,7 +39,7 @@ services:
       - postgres1:/var/lib/postgresql/data
 
   easyfile-api:
-    image: thodev/easyfile-api:0.1
+    image: thodev/easyfile-api:${EASYFILE_API_VERSION}
     pull_policy: always
     container_name: easyfile-api
     environment:
@@ -49,6 +49,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres1:5432/easyfiledb
       SPRING_DATASOURCE_USERNAME: ${EASYFILE_SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${EASYFILE_SPRING_DATASOURCE_PASSWORD}
+      FLYWAY_USER: ${FLYWAY_USER}
+      FLYWAY_PASSWORD: ${FLYWAY_PASSWORD}
+      FLYWAY_URL: jdbc:postgresql://postgres1:5432/easyfiledb
     expose:
       - 8080
     labels:
@@ -62,7 +65,7 @@ services:
       - "traefik.http.routers.easyfile-api.tls.certresolver=mytlschallenge"
 
   easyfile-frontend:
-    image: thodev/easyfile-frontend:0.1
+    image: thodev/easyfile-frontend:${EASYFILE_FRONTEND_VERSION}
     pull_policy: always
     container_name: easyfile-frontend
     expose:

@@ -1,6 +1,7 @@
 package dev.tho.easyfile.model;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,7 @@ public class Bucket {
     @Id
     @GeneratedValue
     private UUID id;
+//    private Instant createdDate;
     private String password;
 
     @OneToMany(mappedBy = "bucket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
