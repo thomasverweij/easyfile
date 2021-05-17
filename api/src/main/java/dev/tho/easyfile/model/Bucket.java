@@ -13,7 +13,7 @@ public class Bucket {
     @Id
     @GeneratedValue
     private UUID id;
-//    private Instant createdDate;
+    private Instant createdDate;
     private String password;
 
     @OneToMany(mappedBy = "bucket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -26,8 +26,9 @@ public class Bucket {
         this.files = new ArrayList<>();
     };
 
-    public Bucket(UUID id, String password, List<FileMetadata> files) {
+    public Bucket(UUID id, Instant createdDate, String password, List<FileMetadata> files) {
         this.id = id;
+        this.createdDate = createdDate;
         this.password = password;
         this.files = files;
     }
@@ -38,6 +39,14 @@ public class Bucket {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
     }
 
     public String getPassword() {
@@ -57,26 +66,24 @@ public class Bucket {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Bucket bucket = (Bucket) o;
-        return id.equals(bucket.id) &&
-                password.equals(bucket.password) &&
-                files.equals(bucket.files);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, password, files);
-    }
-
-    @Override
     public String toString() {
         return "Bucket{" +
                 "id=" + id +
                 ", password='" + password + '\'' +
                 ", files=" + files +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bucket bucket = (Bucket) o;
+        return id.equals(bucket.id) && createdDate.equals(bucket.createdDate) && password.equals(bucket.password) && files.equals(bucket.files);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, createdDate, password, files);
     }
 }

@@ -1,22 +1,42 @@
 package dev.tho.easyfile.dto;
 
-import dev.tho.easyfile.model.FileMetadata;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class BucketDto {
     private UUID id;
+    private Instant createdDate;
     private List<FileMetadataDto> files;
 
     public BucketDto() {};
 
-    public BucketDto(UUID id, List<FileMetadataDto> files) {
+    public BucketDto(UUID id, Instant createdDate, List<FileMetadataDto> files) {
         this.id = id;
+        this.createdDate = createdDate;
         this.files = files;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BucketDto bucketDto = (BucketDto) o;
+        return id.equals(bucketDto.id) && createdDate.equals(bucketDto.createdDate) && files.equals(bucketDto.files);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, createdDate, files);
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
     }
 
     public UUID getId() {
@@ -33,20 +53,6 @@ public class BucketDto {
 
     public void setFiles(List<FileMetadataDto> files) {
         this.files = files;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BucketDto bucketDto = (BucketDto) o;
-        return id.equals(bucketDto.id) &&
-                files.equals(bucketDto.files);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, files);
     }
 
     @Override

@@ -14,7 +14,7 @@ export async function getBucket(token) {
     if (response.status === 200) {
         return await response.json();
     } else {
-        throw new Error(response.statusText);
+        throw new Error(response.status);
     }
 }
 

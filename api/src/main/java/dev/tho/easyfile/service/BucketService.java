@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,9 +37,11 @@ public class BucketService implements UserDetailsService {
 
 
     public BucketDto create(String password) {
-        Bucket bucket = bucketRepository.save(new Bucket(password));
+        Bucket bucket = new Bucket(password);
+        bucket.setCreatedDate(Instant.now());
         logger.debug(bucket.toString());
-        return bucketMapper.asDto(bucket);
+        Bucket result = bucketRepository.save(bucket);
+        return bucketMapper.asDto(result);
     }
 
     public Optional<BucketDto> getBucketById(UUID id) {

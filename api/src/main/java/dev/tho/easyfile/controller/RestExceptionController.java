@@ -1,7 +1,9 @@
 package dev.tho.easyfile.controller;
 
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import dev.tho.easyfile.exception.BucketNotFoundException;
 import dev.tho.easyfile.exception.EntityNotFoundException;
 import dev.tho.easyfile.exception.ErrorMessage;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -28,6 +29,14 @@ public class RestExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity handleEntityNotFoundException(EntityNotFoundException e) {
         ErrorMessage errorMessage = new ErrorMessage(
                 HttpStatus.NOT_FOUND, "Entity not found");
+        return new ResponseEntity<Object>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+    }
+
+    @ExceptionHandler(BucketNotFoundException.class)
+    public ResponseEntity handleBucketNotFoundException(BucketNotFoundException e) {
+        ErrorMessage errorMessage = new ErrorMessage(
+                HttpStatus.NOT_FOUND, "Bucket not found");
         return new ResponseEntity<Object>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
     }
@@ -48,6 +57,7 @@ public class RestExceptionController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
     }
+
 
 
 //    @ExceptionHandler({ Exception.class })

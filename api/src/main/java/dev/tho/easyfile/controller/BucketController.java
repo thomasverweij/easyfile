@@ -2,12 +2,12 @@ package dev.tho.easyfile.controller;
 
 import dev.tho.easyfile.dto.BucketDto;
 import dev.tho.easyfile.dto.CreateBucketDto;
+import dev.tho.easyfile.exception.BucketNotFoundException;
 import dev.tho.easyfile.service.BucketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +33,7 @@ public class BucketController {
     @GetMapping
     public ResponseEntity<BucketDto> getBucket(Authentication auth) {
         UUID id = UUID.fromString(auth.getPrincipal().toString());
-        BucketDto bucketDto = bucketService.getBucketById(id).orElseThrow();
+        BucketDto bucketDto = bucketService.getBucketById(id).orElseThrow(BucketNotFoundException::new);
         return new ResponseEntity<>(bucketDto, HttpStatus.OK);
     }
 

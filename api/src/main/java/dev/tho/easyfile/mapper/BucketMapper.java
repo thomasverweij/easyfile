@@ -16,6 +16,7 @@ public class BucketMapper {
     public BucketDto asDto(Bucket bucket) {
         BucketDto bucketDto = new BucketDto();
         bucketDto.setId(bucket.getId());
+        bucketDto.setCreatedDate(bucket.getCreatedDate());
         bucketDto.setFiles(
                 bucket.getFiles()
                         .stream()

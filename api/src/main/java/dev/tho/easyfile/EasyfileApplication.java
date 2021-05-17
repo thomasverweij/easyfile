@@ -1,6 +1,5 @@
 package dev.tho.easyfile;
 
-import dev.tho.easyfile.model.FileMetadata;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

@@ -7,14 +7,12 @@ import dev.tho.easyfile.model.Bucket;
 import dev.tho.easyfile.model.FileMetadata;
 import dev.tho.easyfile.repository.BucketRepository;
 import dev.tho.easyfile.repository.FileMetadataRepository;
-import io.minio.MinioClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Optional;

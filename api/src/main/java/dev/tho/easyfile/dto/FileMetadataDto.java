@@ -1,9 +1,5 @@
 package dev.tho.easyfile.dto;
 
-import dev.tho.easyfile.model.FileMetadata;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;

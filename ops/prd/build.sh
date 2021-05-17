@@ -1,1 +1,1 @@
-docker build -t thodev:easyfil
+#docker build -t thodev:easyfile-api:latest -f ../Dockerfile

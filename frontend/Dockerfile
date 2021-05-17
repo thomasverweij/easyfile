@@ -5,6 +5,7 @@ WORKDIR /usr/src/app
 COPY rollup.config.js ./
 COPY package*.json ./
 
+ARG EASYFILE_BACKEND
 RUN npm install
 
 COPY ./src ./src

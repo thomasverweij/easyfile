@@ -15,8 +15,3 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-
-flyway:
-  user: ${FLYWAY_USER}
-  password: ${FLYWAY_PASSWORD}
-  url: ${FLYWAY_URL}
