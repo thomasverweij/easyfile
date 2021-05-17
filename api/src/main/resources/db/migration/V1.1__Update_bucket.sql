@@ -1,0 +1,1 @@
+alter table bucket add created_date timestamp without time zone;
