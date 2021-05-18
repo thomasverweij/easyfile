@@ -1,2 +1,2 @@
-cd "$(dirname "$0")"
-mvn clean install -f ../../api && docker compose up -d --build "${1}"
+cd "$(dirname "$0")" || exit
+mvn clean install -f ../../api && docker compose up -d --build 
