@@ -18,6 +18,26 @@ export async function getBucket(token) {
     }
 }
 
+export async function deleteBucket(token) {
+    let headers = new Headers();
+    headers.append("Authorization", token);
+
+    let requestOptions = {
+        method: 'DELETE',
+        headers: headers,
+        redirect: 'follow'
+    };
+
+    const response = await fetch(PREFIX + "/bucket", requestOptions)
+    if (response.status === 204) {
+        return true
+    } else {
+        console.log(response)
+        throw new Error(response.status);
+    }
+}
+
+
 export async function getToken(bucketId, password) {
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
@@ -95,6 +115,23 @@ export async function downloadFile(fileId, token) {
     const response = await fetch(PREFIX + "/download?fileId=" + fileId, requestOptions);
     if (response.status === 200) {
         return await response.blob()
+    } else {
+        throw new Error(response.statusText)
+    }
+}
+
+export async function deleteFile(fileId, token) {
+    let headers = new Headers();
+    headers.append("Authorization", token);
+    var requestOptions = {
+    method: 'DELETE',
+    headers: headers,
+    redirect: 'follow'
+    };
+
+    const response = await fetch(PREFIX + "/file/" + fileId, requestOptions);
+    if (response.status === 204) {
+        return true
     } else {
         throw new Error(response.statusText)
     }

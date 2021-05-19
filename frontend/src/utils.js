@@ -1,3 +1,5 @@
+import { messageStore } from './store.js'
+
 export function timeSince(date) {
 
     date = Date.parse(date)
@@ -45,4 +47,8 @@ export function deletionCountDown(now, date, days) {
       })
     })
     return "(" + time[0] + ":" + time[1] + ":" + time[2] + ")"
+}
+
+export function notify(message) {
+  messageStore.set({message})
 }

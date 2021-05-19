@@ -4,7 +4,9 @@
 	import BucketLogin from "./BucketLogin.svelte"
 	import { onMount } from 'svelte';
 	import { getBucket, getToken, createBucket } from './api.js';
-	import { tokenStore } from './store.js';
+	import { messageStore, tokenStore } from './store.js';
+	import Notification from "./Notification.svelte";
+	import { notify } from "./utils";
 
 	let bucketId = window.location.hash.split('#')[1] || undefined;
 
@@ -16,7 +18,6 @@
 </script>
 <main>
 	<h2 class="title"><a href="/">EasyFile</a></h2>
-	<div id="logo"></div>
 	{#if !bucketId && !$tokenStore}
 		<CreateBucket bind:bucketId={bucketId} />
 	{:else if !$tokenStore}
@@ -24,6 +25,8 @@
 	{:else}
 		<Bucket bucketId={bucketId} />
 	{/if}
+	<Notification />
+
 </main>
 
 <style>

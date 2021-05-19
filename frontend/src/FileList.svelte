@@ -1,10 +1,12 @@
 <script>        
-    import { timeSince } from './utils.js'
-    import { downloadFile } from './api.js';
+    import { notify, timeSince } from './utils.js'
+    import { deleteFile, downloadFile } from './api.js';
     import { tokenStore } from './store.js'
 
 
     export let bucketData;
+    export let uploading;
+
     let currentFileMenu;
 
     let download = async (e) => {
@@ -12,7 +14,7 @@
         let id = e.currentTarget.dataset.id;
         let filename = e.currentTarget.dataset.filename;
         let blob = await downloadFile(id, $tokenStore)
-            .catch(() => alert("could not download file"))
+            .catch(() => notify("could not download file"))
         let elemx = window.document.createElement('a');
         elemx.href = window.URL.createObjectURL(blob);
         elemx.download = filename;
@@ -22,13 +24,25 @@
         document.body.removeChild(elemx);
     }
 
+    let deletef = (e) => {
+        let fileId = e.target.dataset.id
+        deleteFile(fileId, $tokenStore).then(() => {
+            bucketData.files = bucketData.files.filter((f) => (f.id != fileId))
+            notify("File deleted")
+        }).catch(() => {
+            notify("Unable to delete file")
+        })
+    }
     let toggleMenu = (id) => {
         if(currentFileMenu === id) {currentFileMenu = undefined}
         else {currentFileMenu = id}
     }
+
+    $: hideFilelist = bucketData.files.length == 0 && !uploading
+
 </script>
 <div id="fileList">
-<table class:invisible={bucketData.files.length == 0}> 
+<table class:invisible={hideFilelist}> 
     <thead>
         <tr>
         <th class="rownumber">#</th>
@@ -46,17 +60,28 @@
         <tr class:activerow={currentFileMenu != file.id}>
             <td></td>
             <td colspan="2" class="filemenu">
-                <a href="/" data-id="{file.id}" data-filename="{file.fileName}" on:click={download}>Download</a>
+                <a href="/" data-id="{file.id}" data-filename="{file.fileName}" on:click|preventDefault={download}>Download</a>
                 &nbsp;&nbsp;
-                <a href="/" data-id="{file.id}">Delete</a>
+                <a href="/" data-id="{file.id}" on:click|preventDefault={deletef}>Delete</a>
             </td>
         </tr>
         {/each}
+        {#if uploading}
+        <tr>
+            <th scope="row"><div class="loader"></div></th>
+            <td>{uploading}</td>
+            <td></td>
+        </tr>
+        {/if}
     </tbody>
 </table>
+<p class:invisible={!hideFilelist} class="droparea">
+    <i>Drag and drop your file here, or click 'Add file' to upload your file.</i>
+</p>
 </div>
 <style>
     #fileList {
+        padding-top: 50px;
         text-align: center;
     }
     .invisible {
@@ -104,5 +129,24 @@
         width: 120px;
     }
 
+    .droparea {
+        padding: 100px 50px 100px 50px;
+        border: dotted grey 2px;
+        border-radius: 10px;
+    }
+
+    .loader {
+    border: 2px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 2px solid #3d3d3d;
+    width: 10px;
+    height: 10px;
+    animation: spin 0.5s linear infinite;
+    }
+
+    @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+    }
 
 </style>

@@ -1,24 +1,32 @@
 <script>
     import { createBucketAndLogin } from './api.js';
-    import { tokenStore } from './store.js'
+    import { tokenStore } from './store.js';
+    import { notify } from './utils';
 
     export let bucketId;
     let password;
     let loading = false;
 
     async function setBucket() {
-        loading = true;
         let bucket = await createBucketAndLogin(password)
             .finally(() => loading = false)
-            .catch(() => alert("could not create bucket"))
+            .catch(() => notify("could not create bucket"))
+            notify("Bucket created")
         bucketId = bucket.id;
         tokenStore.set(bucket.token);
     }
 
 </script>
-
+<div id="welcome">
+    Create disposable buckets for sharing multiple files. 
+    <ul>
+        <li>5GB file size limit.</li>
+        <li>Files are end-to-end encrypted.</li>
+        <li>Buckets are automatically deleted after 24 hours.</li>
+    </ul>
+</div>
 <div id="create">
-    <p>Create new bucket</p>
+    <p>New bucket:</p>
     <p>
         <input 
             type="password"
@@ -43,6 +51,12 @@
     margin: 0 auto;
     padding: 30px;
     background-color: #e1e1e1;
+}
+
+#welcome {
+    width: 50%;
+    margin: 0 auto;
+    padding: 30px;
 }
 
 #loading {

@@ -1,16 +1,15 @@
 <script>
     import { onMount } from 'svelte';
     import FileList from './FileList.svelte';
-    import { getBucket, uploadFile } from './api.js';
-    import { tokenStore } from './store.js'
-    import { deletionCountDown } from './utils.js'
+    import { getBucket, uploadFile, deleteBucket } from './api.js';
+    import { tokenStore, messageStore } from './store.js'
+    import { deletionCountDown, notify } from './utils.js'
     export let bucketId;
 
     let files;
     let uploading;
     let bucketData = {};
     let token;
-    let error;
     let now = new Date();
     let countdown = ""
 
@@ -23,12 +22,15 @@
     $: if(files) upload()
 
     let upload = async () => {
-        uploading = true;
+        uploading = files[0].name;
         let res = await uploadFile(files[0], token)
-            .catch(() => alert("could not upload file"))
+            .catch(() => notify("could not upload file"))
             .finally(() => uploading = false);
         if (res.id) {
-            getBucket(token).then((r) => { bucketData = r});
+            getBucket(token).then((r) => { 
+                bucketData = r
+                notify("File uploaded")
+            });
         }
     } 
 
@@ -55,12 +57,18 @@
         tempInput.select();
         document.execCommand("copy");
         document.body.removeChild(tempInput);
-        alert("Bucket link copied to clipboard")
+        notify("Bucket link copied to clipboard")
     }
 
-    let deleteBucket = () => {
+    let deleteCurrentBucket = (e) => {
+        e.preventDefault()
         if (confirm("This will also delete the bucket contents. Proceed?")){
-            alert("bucket deleted")
+            deleteBucket(token).then(() => {
+                notify("Bucket deleted")
+                logout()
+            }).catch((e) => {
+                console.log(e.message)
+            })
         }
     }
 
@@ -80,8 +88,10 @@
         }).catch((e) => {
             if(["401"].includes(e.message)) {
                 logout()
+            } else if (["404"].includes(e.message)) {
+                notify("Bucket not found")
             } else {
-                error = "An error occurred"
+                notify("An error occurred")
             }
         });
         document.body.ondragover = (e) => {e.preventDefault()};
@@ -102,21 +112,12 @@
     <div class="options">
         <div class="options-item"><a href="/" on:click={selectFile}>Add file</a></div>
         <div class="options-item"><a href="/" on:click={copyLink}>Copy bucket link</a></div>
-        <div class="options-item"><a href="/" on:click={deleteBucket}>Delete bucket <pre>{countdown}</pre></a></div>
+        <div class="options-item"><a href="/" on:click={deleteCurrentBucket}>Delete bucket <pre>{countdown}</pre></a></div>
         <div class="options-item"><a href="/" on:click={logout}>Logout</a></div>
     </div>
     <div id="main">
-        <p>
-            <span class:invisible={!uploading}>uploading file...</span>        
-        </p>
-        <FileList bucketData={bucketData} />
-        <p class:invisible={bucketData.files.length != 0}><i>Drag and drop your file here, or click 'Add file' to upload your file.</i></p>
+        <FileList bind:bucketData={bucketData} uploading={uploading}/>
         <input bind:files type="file" class="invisible" id="fileInput" name="fileInput" />
-    </div>
-{:else if error}
-    <div id="main">
-        <p>{error}</p>
-        <a href="/" on:click={logout}>Logout</a>
     </div>
 {:else}
     <div id="main">
@@ -153,5 +154,7 @@
     pre {
         display: inline;
     }
+
+
 	 
 </style>
