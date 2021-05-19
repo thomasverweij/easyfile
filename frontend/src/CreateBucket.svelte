@@ -13,9 +13,9 @@
 
     async function setBucket() {
         let bucket = await createBucketAndLogin(password)
-            .finally(() => loading = true)
+            .then(() => notify("Bucket created"))
             .catch(() => notify("could not create bucket"))
-        notify("Bucket created")
+            .finally(() => loading = true)
         bucketId = bucket.id;
         tokenStore.set(bucket.token);
     }
