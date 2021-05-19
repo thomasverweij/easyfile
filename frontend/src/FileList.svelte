@@ -64,7 +64,7 @@
             </tr>
             <tr class:activerow={currentFileMenu != file.id}>
                 <td></td>
-                <td colspan="2" class="filemenu">
+                <td class="filemenu">
                     <a href="/" data-id="{file.id}" data-filename="{file.fileName}" on:click|preventDefault={download}>Download</a>
                     &nbsp;&nbsp;
                     <a href="/" data-id="{file.id}" on:click|preventDefault={deletef}>Delete</a>
@@ -99,22 +99,27 @@
     }
 
     table {
-        width: 100%;
+        width: 90%;
         text-align: left;
         table-layout: fixed;
     }
 
     td, th {
-        /* max-width: 400px; */
         overflow: hidden;
         padding-left: 10px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }
 
     tr {
         height: 30px;
         animation: slide-down .1s ease-out;
+    }
+
+    @media (max-width: 500px){
+        tr th:nth-child(3), tr td:nth-child(3) {
+            display:none;
+        }
     }
 
     @keyframes slide-down {
@@ -131,23 +136,23 @@
     }
 
     .droparea {
-        padding: 100px 50px 100px 50px;
+        padding: 100px 30px 100px 30px;
         border: dotted grey 2px;
         border-radius: 10px;
     }
 
     .loader {
-    border: 2px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 2px solid #3d3d3d;
-    width: 10px;
-    height: 10px;
-    animation: spin 0.5s linear infinite;
+        border: 2px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 2px solid #3d3d3d;
+        width: 10px;
+        height: 10px;
+        animation: spin 0.5s linear infinite;
     }
 
     @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
 </style>

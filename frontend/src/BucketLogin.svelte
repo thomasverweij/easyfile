@@ -25,6 +25,7 @@
     <p>Password:</p>
     <p>
         <input 
+            class="password"
             type="password" 
             placeholder="password" 
             bind:value={password} 
@@ -39,9 +40,20 @@
     border-radius: 25px;
     text-align: center;
     width: 50%;
-    margin: 0 auto;
+    margin: 0 auto 50px auto;
     padding: 30px;
     border: 2px solid #e1e1e1;
     box-shadow: 10px 10px rgb(77, 77, 77);
+}
+@media (max-width: 500px) {
+    #login {
+        width: 80%;
+        padding: 10px;
+        box-shadow: 10px 10px rgb(77, 77, 77);
+    }
+}
+
+.password {
+    width: 60%;
 }
 </style>

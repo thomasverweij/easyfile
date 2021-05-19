@@ -15,24 +15,34 @@
 		});
 
 </script>
-<main>
-	<h2 class="title"><a href="/">EasyFile</a></h2>
-	{#if !bucketId && !$tokenStore}
-		<CreateBucket bind:bucketId={bucketId} />
-	{:else if !$tokenStore}
-		<BucketLogin bind:bucketId={bucketId} />
-	{:else}
-		<Bucket bucketId={bucketId} />
-	{/if}
-	<Notification />
+<div id="wrapper">
+	<main>
+		<h2 class="title"><a href="/">EasyFile</a></h2>
+		{#if !bucketId && !$tokenStore}
+			<CreateBucket bind:bucketId={bucketId} />
+		{:else if !$tokenStore}
+			<BucketLogin bind:bucketId={bucketId} />
+		{:else}
+			<Bucket bucketId={bucketId} />
+		{/if}
+		<Notification />
 
-</main>
-
+	</main>
+</div>
 <style>
 	:global(body) {
 		/* background-color: rgb(233, 233, 233); */
 		color:rgb(97, 97, 97);
-		padding: 30px;
+		padding: 0;
+		margin: 0;
+        overflow-y: auto;
+	}
+
+	#wrapper {
+		width: 100%;
+		margin:0;
+		padding: 0;
+		overflow-x: hidden;
 	}
 
 	:global(input) {
@@ -62,7 +72,6 @@
 		}
 	}
 
-
 	a {
   		color:inherit;
   		text-decoration: none;
@@ -78,6 +87,7 @@
 	@media (max-width: 700px) {
 		main {
 			max-width: none;
+			padding: 0 30px 10px 30px;
 		}
 	}
 </style>
