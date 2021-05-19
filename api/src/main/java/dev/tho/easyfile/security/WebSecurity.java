@@ -50,6 +50,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.applyPermitDefaultValues();
         configuration.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedMethods(ImmutableList.of("*"));
+        configuration.setAllowedOrigins(ImmutableList.of("http://easyfile.tho.dev","http://localhost:5000", "http://localhost"));
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
