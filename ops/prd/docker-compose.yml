@@ -3,7 +3,6 @@ version: '3.7'
 services:
   minio1:
     image: minio/minio:RELEASE.2021-01-08T21-18-21Z
-    container_name: minio
     volumes:
       - data1:/data1
     expose:
@@ -28,7 +27,6 @@ services:
 
   postgres1:
     image: postgres:13.1-alpine
-    container_name: postgres
     expose:
       - 5432
     environment:
@@ -41,7 +39,6 @@ services:
   easyfile-api:
     image: thodev/easyfile-api:0.1
     pull_policy: always
-    container_name: easyfile-api
     environment:
       MINIO_URL: http://minio1:9000
       MINIO_ACCESS_KEY: ${EASYFILE_MINIO_ACCESS_KEY}
@@ -64,7 +61,6 @@ services:
   easyfile-frontend:
     image: thodev/easyfile-frontend:0.1
     pull_policy: always
-    container_name: easyfile-frontend
     expose:
       - 5000
     labels:
@@ -77,7 +73,6 @@ services:
 
   portainer:
     image: portainer/portainer-ce
-    container_name: portainer
     expose:
         - 9000
     volumes:
@@ -96,7 +91,6 @@ services:
 
   traefik:
     image: traefik:v2.4
-    container_name: traefik
     command:
       - "--api.dashboard=true"
       - "--providers.docker=true"
