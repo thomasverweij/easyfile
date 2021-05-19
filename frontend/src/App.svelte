@@ -11,8 +11,7 @@
 	let bucketId = window.location.hash.split('#')[1] || undefined;
 
 	tokenStore.subscribe(value => {
-		localStorage.setItem("token", value);
-
+			localStorage.setItem("token", value);
 		});
 
 </script>

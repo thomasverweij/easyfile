@@ -4,8 +4,8 @@
     import { getBucket, uploadFile, deleteBucket } from './api.js';
     import { tokenStore, messageStore } from './store.js'
     import { deletionCountDown, notify } from './utils.js'
+    
     export let bucketId;
-
     let files;
     let uploading;
     let bucketData = {};

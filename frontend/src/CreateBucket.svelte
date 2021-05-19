@@ -10,17 +10,17 @@
     let hideCreate = true;
     let loading = false;
 
-
-    async function setBucket() {
-        let bucket = await createBucketAndLogin(password)
-            .then(() => notify("Bucket created"))
-            .catch(() => notify("could not create bucket"))
-            .finally(() => loading = true)
-        bucketId = bucket.id;
-        tokenStore.set(bucket.token);
-    }
-
+    let setBucket = async () => {
+        await createBucketAndLogin(password)
+            .then((r) => {
+                bucketId = r.id;
+                tokenStore.set(r.token);
+                () => loading = true
+                notify("Bucket created")
+            }).catch(() => notify("Could not create bucket"))
+        }
 </script>
+
 <div id="welcome">
     Create disposable buckets for sharing multiple files. 
     <ul>
