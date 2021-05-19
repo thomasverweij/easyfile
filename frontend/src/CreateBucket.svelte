@@ -15,7 +15,7 @@
             .then((r) => {
                 bucketId = r.id;
                 tokenStore.set(r.token);
-                () => loading = true
+                loading = true
                 notify("Bucket created")
             }).catch(() => notify("Could not create bucket"))
         }
@@ -58,14 +58,14 @@
     border-radius: 25px;
     text-align: center;
     width: 50%;
-    margin: 0 auto;
+    margin: 0 auto 50px auto;
     padding: 30px;
     box-shadow: 10px 10px rgb(77, 77, 77);
 }
 
 #welcome {
     width: 50%;
-    margin: 0 auto 30px;
+    margin: 0 auto 50px auto;
     padding: 10px 0 10px 150px;
     background-image: url("/welcome.svg");
     background-repeat: no-repeat;
@@ -74,12 +74,17 @@
 @media (max-width: 500px) {
     #welcome {
         width: 80%;
-        margin: 0 auto 50px;
         padding: 150px 0 0 0;
         background-image: url("/welcome.svg");
         background-repeat: no-repeat;
         background-position: center top;
     } 
+
+    #create {
+        width: 80%;
+        padding: 10px;
+        box-shadow: 10px 10px rgb(77, 77, 77);
+    }
 }
 
 
@@ -92,8 +97,6 @@
     text-align: center;
     width: 50%;
     margin: 0 auto;
-    padding: 30px;
-    /* background-color: #e1e1e1; */
 }
 
 .startbutton {

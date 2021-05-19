@@ -56,6 +56,12 @@
 		color: rgb(77, 77, 77);
 	}
 
+	@media (max-width: 500px) {
+		h2 {
+			margin: 10px;
+		}
+	}
+
 
 	a {
   		color:inherit;
@@ -65,6 +71,7 @@
 	main {
 		max-width: 650px;
 		margin: 0 auto;
+		padding-bottom: 30px;
 	}
 
 
