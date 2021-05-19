@@ -42,50 +42,51 @@
 
 </script>
 <div id="fileList">
-<table class:invisible={hideFilelist}> 
-    <thead>
-        <tr>
-        <th class="rownumber">#</th>
-        <th>File</th>
-        <th class="uploaded">Uploaded</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each bucketData.files as file, i}
-        <tr>
-        <th scope="row">{i + 1}</th>
-        <td><a href="/" data-id="{file.id}" title="{file.fileName}" on:click|preventDefault="{() => toggleMenu(file.id)}">{file.fileName}</a></td>
-        <td>{timeSince(file.createdDate)} ago</td>
-        </tr>
-        <tr class:activerow={currentFileMenu != file.id}>
-            <td></td>
-            <td colspan="2" class="filemenu">
-                <a href="/" data-id="{file.id}" data-filename="{file.fileName}" on:click|preventDefault={download}>Download</a>
-                &nbsp;&nbsp;
-                <a href="/" data-id="{file.id}" on:click|preventDefault={deletef}>Delete</a>
-            </td>
-        </tr>
-        {/each}
-        {#if uploading}
-        <tr>
-            <th scope="row"><div class="loader"></div></th>
-            <td>{uploading}</td>
-            <td></td>
-        </tr>
-        {/if}
-    </tbody>
-</table>
-<p class:invisible={!hideFilelist} class="droparea">
-    <i>Drag and drop your file here, or click 'Add file' to upload your file.</i>
-</p>
+{#if hideFilelist}
+    <p class="droparea">
+        <i>Drag and drop your file here, or click 'Add file' to upload your file.</i>
+    </p>
+{:else}
+    <table> 
+        <thead>
+            <tr>
+            <th class="rownumber">#</th>
+            <th>File</th>
+            <th class="uploaded">Uploaded</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each bucketData.files as file, i}
+            <tr>
+            <th scope="row">{i + 1}</th>
+            <td><a href="/" data-id="{file.id}" title="{file.fileName}" on:click|preventDefault="{() => toggleMenu(file.id)}">{file.fileName}</a></td>
+            <td>{timeSince(file.createdDate)} ago</td>
+            </tr>
+            <tr class:activerow={currentFileMenu != file.id}>
+                <td></td>
+                <td colspan="2" class="filemenu">
+                    <a href="/" data-id="{file.id}" data-filename="{file.fileName}" on:click|preventDefault={download}>Download</a>
+                    &nbsp;&nbsp;
+                    <a href="/" data-id="{file.id}" on:click|preventDefault={deletef}>Delete</a>
+                </td>
+            </tr>
+            {/each}
+            {#if uploading}
+            <tr>
+                <th scope="row"><div class="loader"></div></th>
+                <td>{uploading}</td>
+                <td></td>
+            </tr>
+            {/if}
+        </tbody>
+    </table>
+{/if}
 </div>
+
 <style>
     #fileList {
-        padding-top: 50px;
+        margin-top: 20px;
         text-align: center;
-    }
-    .invisible {
-        visibility: hidden;
     }
 
     .activerow {

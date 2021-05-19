@@ -33,6 +33,7 @@
 	:global(body) {
 		/* background-color: rgb(233, 233, 233); */
 		color:rgb(97, 97, 97);
+		padding: 30px;
 	}
 
 	:global(input) {
@@ -56,10 +57,6 @@
 		color: rgb(77, 77, 77);
 	}
 
-	#logo {
-		text-align: center;
-		margin: 20px;
-	}
 
 	a {
   		color:inherit;

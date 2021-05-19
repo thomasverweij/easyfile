@@ -90,8 +90,10 @@
                 logout()
             } else if (["404"].includes(e.message)) {
                 notify("Bucket not found")
+                logout()
             } else {
                 notify("An error occurred")
+                logout()
             }
         });
         document.body.ondragover = (e) => {e.preventDefault()};
@@ -131,6 +133,16 @@
     .options {
         display: flex;
         flex-direction: row;
+        margin-bottom: 50px;
+    }
+    
+    @media (max-width: 500px) {
+        .options {
+            flex-direction: column;
+        } 
+        .options > .options-item {
+            margin-top: 10px;
+        }
     }
 
     .options-item {

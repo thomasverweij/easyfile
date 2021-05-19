@@ -41,6 +41,7 @@
     width: 50%;
     margin: 0 auto;
     padding: 30px;
-    background-color: #e1e1e1;
+    border: 2px solid #e1e1e1;
+    box-shadow: 10px 10px rgb(77, 77, 77);
 }
 </style>

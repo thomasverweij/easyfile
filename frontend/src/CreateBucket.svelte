@@ -2,16 +2,20 @@
     import { createBucketAndLogin } from './api.js';
     import { tokenStore } from './store.js';
     import { notify } from './utils';
+    import { fade } from 'svelte/transition';
+
 
     export let bucketId;
     let password;
+    let hideCreate = true;
     let loading = false;
+
 
     async function setBucket() {
         let bucket = await createBucketAndLogin(password)
-            .finally(() => loading = false)
+            .finally(() => loading = true)
             .catch(() => notify("could not create bucket"))
-            notify("Bucket created")
+        notify("Bucket created")
         bucketId = bucket.id;
         tokenStore.set(bucket.token);
     }
@@ -25,50 +29,79 @@
         <li>Buckets are automatically deleted after 24 hours.</li>
     </ul>
 </div>
-<div id="create">
-    <p>New bucket:</p>
-    <p>
-        <input 
-            type="password"
-            class="password"
-            placeholder="password" 
-            bind:value={password} 
-            on:keyup|preventDefault={(e) => e.code == 'Enter' ? setBucket() : false}
-        />
-        <button on:click={setBucket} disabled={loading}>Ok</button>
-    </p>
-</div>
 
-{#if loading}
-<div id="loading"><p>creating bucket...</p></div>
+{#if hideCreate}
+    <div class="go">
+        <button class="startbutton" on:click={() => hideCreate = !hideCreate}>Start</button>
+    </div>
+{:else}
+    <div id="create" class:invisible={hideCreate} in:fade>
+        <p>Create a password:</p>
+        <p>
+            <input 
+                type="password"
+                class="password"
+                placeholder="password" 
+                bind:value={password} 
+                on:keyup|preventDefault={(e) => e.code == 'Enter' ? setBucket() : false}
+            />
+            <button on:click={setBucket} disabled={loading}>Ok</button>
+        </p>
+    </div>
 {/if}
 
 <style>
+
+
 #create {
+    border: 2px solid #e1e1e1;
     border-radius: 25px;
     text-align: center;
     width: 50%;
     margin: 0 auto;
     padding: 30px;
-    background-color: #e1e1e1;
+    box-shadow: 10px 10px rgb(77, 77, 77);
 }
 
 #welcome {
     width: 50%;
-    margin: 0 auto;
-    padding: 30px;
+    margin: 0 auto 30px;
+    padding: 10px 0 10px 150px;
+    background-image: url("/welcome.svg");
+    background-repeat: no-repeat;
 }
 
-#loading {
-    animation: toVisible 0s 1s forwards;
-    visibility: hidden;
-  }
+@media (max-width: 500px) {
+    #welcome {
+        width: 80%;
+        margin: 0 auto 50px;
+        padding: 150px 0 0 0;
+        background-image: url("/welcome.svg");
+        background-repeat: no-repeat;
+        background-position: center top;
+    } 
+}
+
+
 
 .password {
     width: 60%;
 }
+
+.go {
+    text-align: center;
+    width: 50%;
+    margin: 0 auto;
+    padding: 30px;
+    /* background-color: #e1e1e1; */
+}
+
+.startbutton {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #E9E9E9;
+    box-shadow: 10px 10px rgb(77, 77, 77);
+}
   
-  @keyframes toVisible {
-    to   { visibility: visible; }
-  }
 </style>
