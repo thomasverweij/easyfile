@@ -3,6 +3,7 @@
     import FileList from './FileList.svelte';
     import { getBucket, uploadFile } from './api.js';
     import { tokenStore } from './store.js'
+    import { deletionCountDown } from './utils.js'
     export let bucketId;
 
     let files;
@@ -10,16 +11,10 @@
     let bucketData = {};
     let token;
     let error;
-    let time = new Date();
+    let now = new Date();
+    let countdown = ""
 
-	$: creationDate = new Date(bucketData.createdDate || "")
-	$: deletionDate = new Date(creationDate)
-	$: _ = deletionDate.setDate(deletionDate.getDate() + 1)
-
-	$: distance = deletionDate.getTime() - time.getTime();
-    $: hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    $: minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    $: seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    $: countdown = deletionCountDown(now, new Date(bucketData.createdDate || null), 1)
 
     tokenStore.subscribe(value => {
 		token = value;
@@ -93,7 +88,7 @@
         document.body.ondrop = dropHandler;
 
         const interval = setInterval(() => {
-			time = new Date();
+			now = new Date();
 		}, 1000);
 
 		return () => {
@@ -107,7 +102,7 @@
     <div class="options">
         <div class="options-item"><a href="/" on:click={selectFile}>Add file</a></div>
         <div class="options-item"><a href="/" on:click={copyLink}>Copy bucket link</a></div>
-        <div class="options-item"><a href="/" on:click={deleteBucket}>Delete bucket ({hours}:{minutes}:{seconds})</a></div>
+        <div class="options-item"><a href="/" on:click={deleteBucket}>Delete bucket <pre>{countdown}</pre></a></div>
         <div class="options-item"><a href="/" on:click={logout}>Logout</a></div>
     </div>
     <div id="main">
@@ -155,5 +150,8 @@
         overflow: hidden;
     }
 
+    pre {
+        display: inline;
+    }
 	 
 </style>
