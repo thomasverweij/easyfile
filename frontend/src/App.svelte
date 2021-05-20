@@ -2,25 +2,29 @@
 	import CreateBucket from "./CreateBucket.svelte";
 	import Bucket from "./Bucket.svelte"
 	import BucketLogin from "./BucketLogin.svelte"
-	import { onMount } from 'svelte';
-	import { getBucket, getToken, createBucket } from './api.js';
-	import { messageStore, tokenStore } from './store.js';
+	import { tokenStore } from './store.js';
 	import Notification from "./Notification.svelte";
-	import { notify } from "./utils";
+	import { parseJwt } from "./utils";
 
-	let bucketId = window.location.hash.split('#')[1] || undefined;
+	let hash = window.location.hash.split('#')[1]
+	let bucketId = hash || undefined;
+
+	$: currentBucketId = $tokenStore ? parseJwt($tokenStore).sub : undefined;
+	$: showCreateBucket = !currentBucketId && !hash
+	$: showBucketLogin = (hash && !currentBucketId) || (hash && currentBucketId && currentBucketId != hash)
 
 	tokenStore.subscribe(value => {
 			localStorage.setItem("token", value);
 		});
 
+
 </script>
 <div id="wrapper">
 	<main>
 		<h2 class="title"><a href="/">EasyFile</a></h2>
-		{#if !bucketId && !$tokenStore}
+		{#if showCreateBucket}
 			<CreateBucket bind:bucketId={bucketId} />
-		{:else if !$tokenStore}
+		{:else if showBucketLogin}
 			<BucketLogin bind:bucketId={bucketId} />
 		{:else}
 			<Bucket bucketId={bucketId} />

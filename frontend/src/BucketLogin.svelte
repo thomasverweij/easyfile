@@ -6,7 +6,6 @@
     export let bucketId;
     let password;
 
-
     async function login() {
         let response = await getToken(bucketId, password)
             .catch(() => notify("something went wrong"))

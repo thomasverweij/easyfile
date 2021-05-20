@@ -83,6 +83,7 @@
 
     onMount(() => {
         getBucket(token).then((r) => {
+            bucketId = r.id
             bucketData = r;
             window.location.hash = r.id;
         }).catch((e) => {
