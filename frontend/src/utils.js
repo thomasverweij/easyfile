@@ -63,7 +63,6 @@ export function notify(message) {
     messageStore.set({message})
 }
 
-let iv = window.crypto.getRandomValues(new Uint8Array(12));
 
 export let importRawKey = async (p) => {
     let enc = new TextEncoder();
@@ -85,7 +84,7 @@ export let importJwkKey = async (k) => {
         [ "encrypt", "decrypt" ]
     );
 }
-    
+
 export let getKey = async (p) => {
     let salt = window.crypto.getRandomValues(new Uint8Array(16));
     let keyMaterial = await importRawKey(p);
@@ -103,24 +102,92 @@ export let getKey = async (p) => {
     )
     
     let exp = await window.crypto.subtle.exportKey("jwk", key)
-    
+
     return btoa(JSON.stringify(exp, null, " "))
 }
 
+// let iv = window.crypto.getRandomValues(new Uint8Array(12))
+let iv = new Uint8Array([67, 14, 37, 134, 140, 179, 227, 60, 63, 170, 185, 165])
+
 export let encryptData = async (d, k) => {
     return await window.crypto.subtle.encrypt({name: "AES-GCM", iv: iv}, k, d)
+    .catch((e)=>console.log(e))
 }
 
 export let decryptData = async (d, k) => {
-    return await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, k, d)
+    return await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: iv}, k, d)
+        .catch((e)=>console.log(e))
 }
 
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+var lookup = new Uint8Array(256);
+
+for (var i = 0; i < chars.length; i++) {
+    lookup[chars.charCodeAt(i)] = i;
+}
+
+let b64encode = (arraybuffer) => {
+    var bytes = new Uint8Array(arraybuffer),
+    i, len = bytes.length, base64 = "";
+
+    for (i = 0; i < len; i+=3) {
+      base64 += chars[bytes[i] >> 2];
+      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+      base64 += chars[bytes[i + 2] & 63];
+    }
+
+    if ((len % 3) === 2) {
+      base64 = base64.substring(0, base64.length - 1) + "=";
+    } else if (len % 3 === 1) {
+      base64 = base64.substring(0, base64.length - 2) + "==";
+    }
+
+    return base64;
+}
+
+let b64decode = (base64) => {
+    var bufferLength = base64.length * 0.75,
+    len = base64.length, i, p = 0,
+    encoded1, encoded2, encoded3, encoded4;
+
+    if (base64[base64.length - 1] === "=") {
+      bufferLength--;
+      if (base64[base64.length - 2] === "=") {
+        bufferLength--;
+      }
+    }
+
+    var arraybuffer = new ArrayBuffer(bufferLength),
+    bytes = new Uint8Array(arraybuffer);
+
+    for (i = 0; i < len; i+=4) {
+      encoded1 = lookup[base64.charCodeAt(i)];
+      encoded2 = lookup[base64.charCodeAt(i+1)];
+      encoded3 = lookup[base64.charCodeAt(i+2)];
+      encoded4 = lookup[base64.charCodeAt(i+3)];
+
+      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+    }
+
+    return arraybuffer;
+}
+
+
 export let encryptText = async (d, k) => {
-    return await encryptData(new TextEncoder().encode(d), k)
+    let t = new TextEncoder().encode(d)
+    let c = await encryptData(t, k)
+    return b64encode(c)
 }
 
 export let decryptText = async (d, k) => {
-    return new TextDecoder().decode(await decryptData(d, k))
+    let t = b64decode(d)
+    let c = await decryptData(t, k)
+    let a = new TextDecoder().decode(c)
+    return a
 }
 
 export let readFileEncrypted = (file, key) => {
@@ -134,40 +201,27 @@ export let readFileEncrypted = (file, key) => {
     })
 }
 
-// export const fromHexString = hexString =>
-//   new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-
-// export const toHexString = bytes =>
-//   bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
-
-
-// export let getPBKDF2Key = async (p) => {
-//     let salt;
-//     const keyMaterial = await importRawKey(p);
-//     salt = window.crypto.getRandomValues(new Uint8Array(16));
-//     const derivedBits = await window.crypto.subtle.deriveBits(
-//       {
-//         "name": "PBKDF2",
-//         salt: salt,
-//         "iterations": 100000,
-//         "hash": "SHA-256"
-//       },
-//       keyMaterial,
-//       256
-//     );
-//     return btoa(toHexString(new Uint8Array(derivedBits,0,16)))
-// }
-
 export let encryptFile = async (file, key) => {
     let k = await importJwkKey(JSON.parse(atob(key)))
     return new File(
         [await readFileEncrypted(file, k)], 
-        file.name, 
+        await encryptText(file.name, k), 
         {"type": file.type}
     )
 }
 
 export let decryptFile = async (buffer, key) => {
     let k = await importJwkKey(JSON.parse(atob(key)))
-    return await decryptData(buffer, k)
+    return await decryptData(buffer, k) || "Decryption error"
+}
+
+export let decryptBucketData = async (bucket, key) => {
+    let k = await importJwkKey(JSON.parse(atob(key)))
+    bucket.files = await Promise.all(bucket.files.map(async (f) => {
+            let filename = await decryptText(f.fileName, k)
+            f.fileName = filename || "Decryption error"
+            return f
+        })
+    )
+    return bucket
 }

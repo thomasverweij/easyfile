@@ -3,7 +3,7 @@
     import FileList from './FileList.svelte';
     import { getBucket, uploadFile, deleteBucket } from './api.js';
     import { tokenStore, keyStore } from './store.js'
-    import { deletionCountDown, notify, encryptFile } from './utils.js'
+    import { deletionCountDown, notify, encryptFile, decryptBucketData } from './utils.js'
     
     export let bucketId;
     let files;
@@ -24,8 +24,9 @@
         } 
         uploading = files[0].name;
         encryptFile(files[0], $keyStore)
-            .then((d) => uploadFile(d, $tokenStore))
+            .then((f) => uploadFile(f, $tokenStore))
             .then(() => getBucket($tokenStore))
+            .then((b) => decryptBucketData(b, $keyStore))
             .then((r) => { 
                     bucketData = r
                     notify("File uploaded")
@@ -85,21 +86,23 @@
     }
 
     onMount(() => {
-        getBucket($tokenStore).then((r) => {
-            bucketId = r.id
-            bucketData = r;
-            window.location.hash = r.id;
-        }).catch((e) => {
-            if(["401"].includes(e.message)) {
-                logout()
-            } else if (["404"].includes(e.message)) {
-                notify("Bucket not found")
-                logout()
-            } else {
-                notify("An error occurred")
-                logout()
-            }
-        });
+        getBucket($tokenStore)
+            .then((b) => decryptBucketData(b, $keyStore))
+            .then((b) => {
+                bucketId = b.id
+                bucketData = b;
+                window.location.hash = b.id;
+            }).catch((e) => {
+                if(["401"].includes(e.message)) {
+                    logout()
+                } else if (["404"].includes(e.message)) {
+                    notify("Bucket not found")
+                    logout()
+                } else {
+                    notify("An error occurred")
+                    console.log(e)
+                }
+            });
         document.body.ondragover = (e) => {e.preventDefault()};
         document.body.ondrop = dropHandler;
 
