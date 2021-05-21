@@ -1,7 +1,7 @@
 <script>
     import { getToken } from './api.js';
     import { keyStore, tokenStore } from './store.js'
-    import { getKey, notify } from './utils.js';
+    import { getKey, notify, getSalt } from './utils.js';
 
     export let bucketId;
     let password;
@@ -10,7 +10,7 @@
         let response = await getToken(bucketId, password)
             .catch(() => notify("something went wrong"))
         if (response.status == 200) {
-            getKey(password).then((k) => {
+            await getKey(password, getSalt(bucketId)).then((k) => {
                     keyStore.set(k)
                 })            
             tokenStore.set(response.token)

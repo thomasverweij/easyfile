@@ -1,7 +1,7 @@
 <script>
     import { createBucketAndLogin } from './api.js';
     import { keyStore, tokenStore } from './store.js';
-    import { getKey, notify } from './utils';
+    import { getKey, getSalt, notify } from './utils';
     import { fade } from 'svelte/transition';
 
 
@@ -10,12 +10,12 @@
     let hideCreate = true;
     let loading = false;
 
-    let setBucket = async () => {
-        await createBucketAndLogin(password)
+    let setBucket = () => {
+         createBucketAndLogin(password)
             .then(async (r) => {
-                await getKey(password).then((k) => {
-                    keyStore.set(k)
-                })
+                console.log("test")
+                let key = await getKey(password, getSalt(r.id))
+                keyStore.set(key)
                 tokenStore.set(r.token);
                 bucketId = r.id;
                 loading = true

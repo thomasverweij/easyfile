@@ -85,8 +85,8 @@ export let importJwkKey = async (k) => {
     );
 }
 
-export let getKey = async (p) => {
-    let salt = window.crypto.getRandomValues(new Uint8Array(16));
+
+export let getKey = async (p, salt) => {
     let keyMaterial = await importRawKey(p);
     let key = await window.crypto.subtle.deriveKey(
         {
@@ -105,6 +105,10 @@ export let getKey = async (p) => {
 
     return btoa(JSON.stringify(exp, null, " "))
 }
+
+export let getSalt = (s) => {
+    return new TextEncoder().encode(s.slice(0,16))
+} 
 
 // let iv = window.crypto.getRandomValues(new Uint8Array(12))
 let iv = new Uint8Array([67, 14, 37, 134, 140, 179, 227, 60, 63, 170, 185, 165])
