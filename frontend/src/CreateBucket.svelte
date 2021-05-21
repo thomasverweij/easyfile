@@ -1,7 +1,7 @@
 <script>
     import { createBucketAndLogin } from './api.js';
-    import { tokenStore } from './store.js';
-    import { notify } from './utils';
+    import { keyStore, tokenStore } from './store.js';
+    import { decryptText, encryptText, getKey, notify } from './utils';
     import { fade } from 'svelte/transition';
 
 
@@ -14,6 +14,9 @@
         await createBucketAndLogin(password)
             .then((r) => {
                 bucketId = r.id;
+                getKey(password).then((k) => {
+                    keyStore.set(k)
+                })
                 tokenStore.set(r.token);
                 loading = true
                 notify("Bucket created")
@@ -22,11 +25,11 @@
 </script>
 
 <div id="welcome">
-    Create disposable buckets for sharing multiple files. 
+    Create private disposable buckets for sharing multiple files. 
     <ul>
-        <li>5GB file size limit.</li>
-        <li>Files are end-to-end encrypted.</li>
+        <li>Files and metadata are end-to-end encrypted in the browser.</li>
         <li>Buckets are automatically deleted after 24 hours.</li>
+        <li>500Mb file size limit (due to browser encryption).</li>
     </ul>
 </div>
 
@@ -69,6 +72,10 @@
     padding: 10px 0 10px 150px;
     background-image: url("/welcome.svg");
     background-repeat: no-repeat;
+}
+
+li {
+    margin-bottom: 10px;
 }
 
 @media (max-width: 500px) {

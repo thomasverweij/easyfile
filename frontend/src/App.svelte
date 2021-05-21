@@ -2,7 +2,7 @@
 	import CreateBucket from "./CreateBucket.svelte";
 	import Bucket from "./Bucket.svelte"
 	import BucketLogin from "./BucketLogin.svelte"
-	import { tokenStore } from './store.js';
+	import { keyStore, tokenStore } from './store.js';
 	import Notification from "./Notification.svelte";
 	import { parseJwt } from "./utils";
 
@@ -17,6 +17,9 @@
 			localStorage.setItem("token", value);
 		});
 
+	keyStore.subscribe(value => {
+		localStorage.setItem("key", value);
+	});
 
 </script>
 <div id="wrapper">
@@ -30,7 +33,6 @@
 			<Bucket bucketId={bucketId} />
 		{/if}
 		<Notification />
-
 	</main>
 </div>
 <style>

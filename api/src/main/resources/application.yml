@@ -13,5 +13,5 @@ spring:
     generate-ddl: true
   servlet:
     multipart:
-      max-file-size: 5GB
-      max-request-size: 5GB
+      max-file-size: 500Mb
+      max-request-size: 500Mb

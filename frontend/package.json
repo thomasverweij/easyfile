@@ -18,7 +18,6 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
-    "qrcode-svg": "^1.1.0",
     "sirv-cli": "^1.0.0"
   }
 }

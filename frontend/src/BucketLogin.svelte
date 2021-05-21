@@ -1,7 +1,7 @@
 <script>
     import { getToken } from './api.js';
-    import { tokenStore } from './store.js'
-    import { notify } from './utils.js';
+    import { keyStore, tokenStore } from './store.js'
+    import { getKey, notify } from './utils.js';
 
     export let bucketId;
     let password;
@@ -10,6 +10,9 @@
         let response = await getToken(bucketId, password)
             .catch(() => notify("something went wrong"))
         if (response.status == 200) {
+            getKey(password).then((k) => {
+                    keyStore.set(k)
+                })            
             tokenStore.set(response.token)
         } else if (response.status == 401) {
             notify("Access denied")

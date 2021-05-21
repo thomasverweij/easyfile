@@ -83,7 +83,7 @@ export async function createBucketAndLogin(password) {
     return {id: bucket.id, token: token.token}
 }
 
-export async function uploadFile(file, token) {
+export async function uploadFile(file, token,) {
     let headers = new Headers();
     headers.append("Authorization", token);
     let formdata = new FormData();
@@ -102,8 +102,9 @@ export async function uploadFile(file, token) {
     } else {
         throw new Error(response.statusText)
     }
+
 }
-export async function downloadFile(fileId, token) {
+export async function downloadFile(fileId, token, key) {
     let headers = new Headers();
     headers.append("Authorization", token);
     var requestOptions = {
@@ -113,8 +114,9 @@ export async function downloadFile(fileId, token) {
     };
 
     const response = await fetch(PREFIX + "/download?fileId=" + fileId, requestOptions);
+
     if (response.status === 200) {
-        return await response.blob()
+        return response.arrayBuffer()
     } else {
         throw new Error(response.statusText)
     }

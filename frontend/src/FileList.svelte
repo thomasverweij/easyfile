@@ -1,27 +1,41 @@
 <script>        
-    import { notify, timeSince } from './utils.js'
+    import { notify, timeSince, decryptFile } from './utils.js'
     import { deleteFile, downloadFile } from './api.js';
-    import { tokenStore } from './store.js'
-
+    import { tokenStore, keyStore } from './store.js'
+    
 
     export let bucketData;
     export let uploading;
+    let downloading
+
 
     let currentFileMenu;
 
     let download = async (e) => {
-        e.preventDefault();
         let id = e.currentTarget.dataset.id;
         let filename = e.currentTarget.dataset.filename;
-        let blob = await downloadFile(id, $tokenStore)
-            .catch(() => notify("could not download file"))
-        let elemx = window.document.createElement('a');
-        elemx.href = window.URL.createObjectURL(blob);
-        elemx.download = filename;
-        elemx.style.display = 'none';
-        document.body.appendChild(elemx);
-        elemx.click();
-        document.body.removeChild(elemx);
+
+        downloading = id;
+        downloadFile(id, $tokenStore)
+            .then((f) => decryptFile(f, $keyStore))
+            .then((b) => {
+                let elemx = window.document.createElement('a');
+                let blob = new Blob([b])
+                let uri = window.URL.createObjectURL(blob);
+                elemx.href = uri;
+                elemx.download = filename;
+                elemx.style.display = 'none';
+                document.body.appendChild(elemx);
+                elemx.click();
+                document.body.removeChild(elemx);
+                URL.revokeObjectURL(uri);
+            })
+            .catch((e) => {
+                console.log(e)
+                notify("could not download file")
+            })
+            .finally(() => downloading = false)
+
     }
 
     let deletef = (e) => {
@@ -65,7 +79,12 @@
             <tr class:activerow={currentFileMenu != file.id}>
                 <td></td>
                 <td class="filemenu">
-                    <a href="/" data-id="{file.id}" data-filename="{file.fileName}" on:click|preventDefault={download}>Download</a>
+                    <a href="/" id="{file.id}" data-id="{file.id}" data-filename="{file.fileName}" on:click|preventDefault={download}>
+                        {#if downloading}
+                        <div class="loader"></div>
+                        {/if}
+                        Download
+                    </a>
                     &nbsp;&nbsp;
                     <a href="/" data-id="{file.id}" on:click|preventDefault={deletef}>Delete</a>
                 </td>
@@ -142,6 +161,7 @@
     }
 
     .loader {
+        display: inline-block;
         border: 2px solid #f3f3f3;
         border-radius: 50%;
         border-top: 2px solid #3d3d3d;

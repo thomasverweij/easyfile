@@ -2,45 +2,48 @@
     import { onMount } from 'svelte';
     import FileList from './FileList.svelte';
     import { getBucket, uploadFile, deleteBucket } from './api.js';
-    import { tokenStore, messageStore } from './store.js'
-    import { deletionCountDown, notify } from './utils.js'
+    import { tokenStore, keyStore } from './store.js'
+    import { deletionCountDown, notify, encryptFile } from './utils.js'
     
     export let bucketId;
     let files;
     let uploading;
     let bucketData = {};
-    let token;
     let now = new Date();
     let countdown = ""
 
     $: countdown = deletionCountDown(now, new Date(bucketData.createdDate || null), 1)
 
-    tokenStore.subscribe(value => {
-		token = value;
-	});
 
     $: if(files) upload()
 
-    let upload = async () => {
+    let upload = () => {
+        if(files[0].size >= 524288000) {
+            notify("Selected file size exceeds limit of 500Mb")
+            return
+        } 
         uploading = files[0].name;
-        let res = await uploadFile(files[0], token)
-            .catch(() => notify("could not upload file"))
+        encryptFile(files[0], $keyStore)
+            .then((d) => uploadFile(d, $tokenStore))
+            .then(() => getBucket($tokenStore))
+            .then((r) => { 
+                    bucketData = r
+                    notify("File uploaded")
+                })
+            .catch((e) => {
+                notify("Could not upload file")
+                console.log(e)
+            })
             .finally(() => uploading = false);
-        if (res.id) {
-            getBucket(token).then((r) => { 
-                bucketData = r
-                notify("File uploaded")
-            });
-        }
     } 
 
     let logout = () => {
         bucketData = undefined;
-        token = undefined;
         bucketId = undefined;
         files = undefined;
         window.location = window.location.hash.split('#')[0];
         localStorage.removeItem('token');
+        localStorage.removeItem('key');
     }
 
     let selectFile = (e) =>  {
@@ -63,7 +66,7 @@
     let deleteCurrentBucket = (e) => {
         e.preventDefault()
         if (confirm("This will also delete the bucket contents. Proceed?")){
-            deleteBucket(token).then(() => {
+            deleteBucket($tokenStore).then(() => {
                 notify("Bucket deleted")
                 logout()
             }).catch((e) => {
@@ -82,7 +85,7 @@
     }
 
     onMount(() => {
-        getBucket(token).then((r) => {
+        getBucket($tokenStore).then((r) => {
             bucketId = r.id
             bucketData = r;
             window.location.hash = r.id;
