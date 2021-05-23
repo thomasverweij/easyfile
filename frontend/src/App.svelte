@@ -38,7 +38,7 @@
 <style>
 	:global(body) {
 		/* background-color: rgb(233, 233, 233); */
-		color:rgb(97, 97, 97);
+		color:rgb(55, 55, 55);
 		padding: 0;
 		margin: 0;
         overflow-y: auto;
@@ -62,14 +62,14 @@
 	}
 
 	:global(a), :global(a:visited) {	
-		color: rgb(107, 107, 107);
+		color: inherit;
 	}
 
 	h2 {
 		font-family: Didot;
 		font-size: 40pt;
 		text-align: center;
-		color: rgb(77, 77, 77);
+		color: rgb(36, 36, 36);
 	}
 
 	@media (max-width: 500px) {
