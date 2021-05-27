@@ -22,6 +22,7 @@
     "sirv-cli": "^1.0.0",
     "streamsaver": "^2.0.5",
     "tus-js-client": "^2.3.0",
+    "web-streams-polyfill": "^3.0.3",
     "wormhole-crypto": "^0.1.1"
   }
 }

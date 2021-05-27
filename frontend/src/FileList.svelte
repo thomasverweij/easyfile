@@ -3,6 +3,7 @@
     import { deleteFile, downloadFile } from './api.js';
     import { tokenStore, keyStore } from './store.js'
     import * as streamsaver from 'streamsaver'
+    import * as ponyfill from 'web-streams-polyfill/ponyfill'
 
     export let bucketData;
     export let uploading;
@@ -17,8 +18,30 @@
             let filesize = e.currentTarget.size;
             let stream = await downloadFile(id, $tokenStore)
             let decryptedFile = await decryptFile(stream, $keyStore, getSalt(bucketData.id))
-            const fileStream = streamsaver.createWriteStream(filename,{size: filesize})
-            decryptedFile.pipeTo(fileStream).then(()=>{downloading = false})
+            let fileStream
+
+            try {
+                fileStream = streamsaver.createWriteStream(filename,{size: filesize})
+            } catch {
+                streamsaver.WritableStream = ponyfill.WritableStream
+                fileStream = streamsaver.createWriteStream(filename,{size: filesize})
+            }
+
+            if (decryptedFile.pipeTo) {
+                return decryptedFile.pipeTo(fileStream).then(()=>{downloading = false})
+            }
+
+            const writer = fileStream.getWriter();
+            const reader = decryptedFile.getReader();
+            const pump = () => reader.read().then(({ value, done }) => done
+                ? writer.close()
+                : writer.write(value).then(pump)
+            );
+
+            pump().then(() =>
+                downloading = false
+            )
+
         } catch (e) {
             console.log(e)
             notify("could not download file")
@@ -53,7 +76,7 @@
             <tr>
             <th class="rownumber">#</th>
             <th>File</th>
-            <th class="uploaded">Uploaded</th>
+            <th class="uploaded">Date</th>
             </tr>
         </thead>
         <tbody>

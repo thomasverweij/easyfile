@@ -39,7 +39,7 @@
                 "Authorization": $tokenStore
             },
             uploadSize: encryptedSize(files[0].size),
-            chunkSize: 5000 * 1000
+            chunkSize: 9000 * 1000
         }
 
         let callbacks = {
