@@ -51,8 +51,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.easyfile-api.rule=Host(`${EASYFILE_API_HOST}`) && PathPrefix(`/api`)"
-      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.easyfile-api.middlewares=api-stripprefix"
+      # - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+      # - "traefik.http.routers.easyfile-api.middlewares=api-stripprefix"
       - "traefik.http.routers.easyfile-api.entrypoints=web"
       - "traefik.http.services.easyfile-api.loadbalancer.server.port=8080"
       - "traefik.http.routers.easyfile-api.entrypoints=websecure"

@@ -2,12 +2,14 @@ package dev.tho.easyfile.controller;
 
 
 import dev.tho.easyfile.EasyfileApplication;
+import dev.tho.easyfile.config.TusConfig;
 import dev.tho.easyfile.dto.FileMetadataDto;
 import dev.tho.easyfile.service.FileMetadataService;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
 import me.desair.tus.server.upload.UploadInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,20 +33,12 @@ import java.util.UUID;
 @Controller
 public class TusFileController {
 
-    private final TusFileUploadService tusFileUploadService;
-
-    public static final String TUSDIR = "/tmp/easyfile/tus";
+    @Autowired
+    private TusFileUploadService tusFileUploadService;
 
     @Autowired
     FileMetadataService fileMetadataService;
 
-    public TusFileController() {
-        this.tusFileUploadService = new TusFileUploadService()
-                .withStoragePath(TUSDIR)
-                .withUploadURI("/upload");
-
-        Path tusUploadDirectory = Paths.get(TUSDIR);
-    }
 
     @RequestMapping(value = { "/upload", "/upload/**" }, method = { RequestMethod.POST,
             RequestMethod.PATCH, RequestMethod.HEAD, RequestMethod.DELETE, RequestMethod.GET })
@@ -85,7 +79,7 @@ public class TusFileController {
 
     @Scheduled(fixedDelayString = "PT24H")
     private void cleanup() {
-        Path locksDir = Paths.get(TUSDIR).resolve("locks");
+        Path locksDir = Paths.get(TusConfig.tusDir).resolve("locks");
         if (Files.exists(locksDir)) {
             try {
                 this.tusFileUploadService.cleanup();

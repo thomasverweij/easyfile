@@ -29,7 +29,7 @@
         let keychain = new Keychain($keyStore, getSalt(bucketId))
         let encryptedFileStream = await keychain.encryptStream(fileStream)
         let settings = {
-            endpoint: PREFIX + "/upload",
+            endpoint: __APP__.env.prefix + "/upload",
             retryDelays: [0, 3000, 5000, 10000, 20000],
             metadata: {
                 filename: files[0].name,
