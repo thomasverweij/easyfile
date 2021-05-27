@@ -12,17 +12,17 @@
     let download = async (e) => {
         try {
             let id = e.currentTarget.dataset.id;
+            downloading = id
             let filename = e.currentTarget.dataset.filename;
-            downloading = id;
+            let filesize = e.currentTarget.size;
             let stream = await downloadFile(id, $tokenStore)
             let decryptedFile = await decryptFile(stream, $keyStore, getSalt(bucketData.id))
-            const fileStream = streamsaver.createWriteStream(filename)
-            decryptedFile.pipeTo(fileStream)
+            const fileStream = streamsaver.createWriteStream(filename,{size: filesize})
+            decryptedFile.pipeTo(fileStream).then(()=>{downloading = false})
         } catch (e) {
             console.log(e)
             notify("could not download file")
         }
-        downloading = false
     }
 
     let deletef = (e) => {
@@ -66,7 +66,7 @@
             <tr class:activerow={currentFileMenu != file.id}>
                 <td></td>
                 <td class="filemenu">
-                    <a href="/" id="{file.id}" data-id="{file.id}" data-filename="{file.fileName}" on:click|preventDefault={download}>
+                    <a href="/" id="{file.id}" data-id="{file.id}" data-size="{file.size}" data-filename="{file.fileName}" on:click|preventDefault={download}>
                         {#if downloading}
                         <div class="loader"></div>
                         {/if}
