@@ -1,4 +1,6 @@
 import { messageStore } from './store.js'
+import { Keychain } from 'wormhole-crypto'
+
 
 export function timeSince(date) {
     
@@ -72,7 +74,7 @@ export let importRawKey = async (p) => {
         {name: "PBKDF2"}, 
         false, 
         ["deriveBits", "deriveKey"]
-    );
+    )
 }
 
 export let importJwkKey = async (k) => {
@@ -86,7 +88,7 @@ export let importJwkKey = async (k) => {
 }
 
 
-export let getKey = async (p, salt) => {
+export let getKeyOld = async (p, salt) => {
     let keyMaterial = await importRawKey(p);
     let key = await window.crypto.subtle.deriveKey(
         {
@@ -104,6 +106,25 @@ export let getKey = async (p, salt) => {
     let exp = await window.crypto.subtle.exportKey("jwk", key)
 
     return btoa(JSON.stringify(exp, null, " "))
+}
+
+export let derivePBKDF2 = async (key, salt) => {
+    return window.crypto.subtle.deriveBits({
+        "name": "PBKDF2",
+        salt: salt,
+        iterations: 1000,
+        hash: {name: "SHA-256"}, 
+    },
+    key, 
+    128 
+)
+}
+
+export let getKey = async (p, salt) => {
+    let keyMaterial = await importRawKey(p)
+    let keyMaterialBits = await derivePBKDF2(keyMaterial, salt)
+    let keychain = new Keychain(new Uint8Array(keyMaterialBits), salt)
+    return keychain.keyB64
 }
 
 export let getSalt = (s) => {
@@ -205,6 +226,17 @@ export let readFileEncrypted = (file, key) => {
     })
 }
 
+export let readFile = (file) => {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader()
+        reader.onload = () => {
+          resolve(reader.result)
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+    })
+}
+
 export let encryptFile = async (file, key) => {
     let k = await importJwkKey(JSON.parse(atob(key)))
     return new File(
@@ -214,18 +246,25 @@ export let encryptFile = async (file, key) => {
     )
 }
 
-export let decryptFile = async (buffer, key) => {
+export let decryptFile = async (stream, key, salt) => {
+    let keychain = new Keychain(key, salt)
+    let decryptedStream = await keychain.decryptStream(stream).catch((e)=>console.log(e))
+    return decryptedStream
+}
+
+export let decryptBucketData = async (bucket, key) => {
+    // let k = await importJwkKey(JSON.parse(atob(key)))
+    // bucket.files = await Promise.all(bucket.files.map(async (f) => {
+    //         let filename = await decryptText(f.fileName, k)
+    //         f.fileName = filename || "Decryption error"
+    //         return f
+    //     })
+    // )
+    return bucket
+}
+
+export let decryptFileStream = async (buffer, key) => {
     let k = await importJwkKey(JSON.parse(atob(key)))
     return await decryptData(buffer, k) || "Decryption error"
 }
 
-export let decryptBucketData = async (bucket, key) => {
-    let k = await importJwkKey(JSON.parse(atob(key)))
-    bucket.files = await Promise.all(bucket.files.map(async (f) => {
-            let filename = await decryptText(f.fileName, k)
-            f.fileName = filename || "Decryption error"
-            return f
-        })
-    )
-    return bucket
-}

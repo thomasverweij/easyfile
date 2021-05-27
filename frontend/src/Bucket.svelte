@@ -1,9 +1,11 @@
 <script>
+    import * as tus from "tus-js-client";
+    import { Keychain, encryptedSize } from 'wormhole-crypto'
     import { onMount } from 'svelte';
     import FileList from './FileList.svelte';
-    import { getBucket, uploadFile, deleteBucket } from './api.js';
+    import { getBucket, deleteBucket, PREFIX} from './api.js';
     import { tokenStore, keyStore } from './store.js'
-    import { deletionCountDown, notify, encryptFile, decryptBucketData } from './utils.js'
+    import { deletionCountDown, notify, decryptBucketData, getSalt } from './utils.js'
     
     export let bucketId;
     let files;
@@ -14,28 +16,53 @@
 
     $: countdown = deletionCountDown(now, new Date(bucketData.createdDate || null), 1)
 
-
     $: if(files) upload()
 
-    let upload = () => {
-        if(files[0].size >= 524288000) {
-            notify("Selected file size exceeds limit of 500Mb")
-            return
-        } 
-        uploading = files[0].name;
-        encryptFile(files[0], $keyStore)
-            .then((f) => uploadFile(f, $tokenStore))
-            .then(() => getBucket($tokenStore))
-            .then((b) => decryptBucketData(b, $keyStore))
-            .then((r) => { 
-                    bucketData = r
+    let upload = async () => {
+        // if(files[0].size >= 524288000) {
+        //     notify("Selected file size exceeds limit of 500Mb")
+        //     return
+        // } 
+        uploading = files[0].name
+
+        let fileStream = new Response(files[0]).body // || files[0].stream()
+        let keychain = new Keychain($keyStore, getSalt(bucketId))
+        let encryptedFileStream = await keychain.encryptStream(fileStream)
+        let settings = {
+            endpoint: PREFIX + "/upload",
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            metadata: {
+                filename: files[0].name,
+                filetype: files[0].type
+            },
+            headers: {
+                "Authorization": $tokenStore
+            },
+            uploadSize: encryptedSize(files[0].size),
+            chunkSize: 5000 * 1000
+        }
+
+        let callbacks = {
+                onError: (error) => {
+                    console.log("Failed because: " + error)
+                    uploading = false
+                    notify("Could not upload file")
+                },
+                onProgress: (bytesUploaded, bytesTotal) => {
+                    var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
+                    console.log(bytesUploaded, bytesTotal, percentage + "%")
+                },
+                onSuccess: async () => {
+                    let bucket = await getBucket($tokenStore)
+                    bucketData = await decryptBucketData(bucket, $keyStore)
+                    uploading = false
                     notify("File uploaded")
-                })
-            .catch((e) => {
-                notify("Could not upload file")
-                console.log(e)
-            })
-            .finally(() => uploading = false);
+                }
+            }
+
+        let upload = new tus.Upload(encryptedFileStream.getReader(), Object.assign(settings, callbacks))
+        upload.start()
+
     } 
 
     let logout = () => {

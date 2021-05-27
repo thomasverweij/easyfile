@@ -31,7 +31,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.cors().and()
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+            .anyRequest().authenticated()
             .and()
             .addFilter(new JWTAuthenticationFilter(authenticationManager()))
             .addFilter(new JWTAuthorizationFilter(authenticationManager()))
@@ -49,7 +50,15 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.applyPermitDefaultValues();
-        configuration.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedHeaders(ImmutableList.of(
+                "Authorization", "Cache-Control", "Content-Type","Upload-Offset",
+                "Location", "Upload-Length", "Tus-Version", "Tus-Resumable",
+                "Tus-Max-Size", "Tus-Extension", "Upload-Metadata"
+        ));
+        configuration.setExposedHeaders(ImmutableList.of(
+                "Upload-Offset",
+                "Location"
+        ));
         configuration.setAllowedMethods(ImmutableList.of("*"));
         configuration.setAllowedOrigins(ImmutableList.of("https://easyfile.tho.dev","http://localhost:5000", "http://localhost"));
         source.registerCorsConfiguration("/**", configuration);

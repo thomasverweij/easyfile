@@ -1,4 +1,4 @@
-const PREFIX = __APP__.env.prefix;
+export const PREFIX = __APP__.env.prefix;
 
 export async function getBucket(token) {
     let headers = new Headers();
@@ -83,27 +83,6 @@ export async function createBucketAndLogin(password) {
     return {id: bucket.id, token: token.token}
 }
 
-export async function uploadFile(file, token,) {
-    let headers = new Headers();
-    headers.append("Authorization", token);
-    let formdata = new FormData();
-    formdata.append("file", file, file.name);
-
-    let requestOptions = {
-        method: 'POST',
-        headers: headers,
-        body: formdata,
-        redirect: 'follow'
-    };
-
-    const response = await fetch(PREFIX + "/file", requestOptions);
-    if (response.status === 200) {
-        return await response.json()
-    } else {
-        throw new Error(response.statusText)
-    }
-
-}
 export async function downloadFile(fileId, token, key) {
     let headers = new Headers();
     headers.append("Authorization", token);
@@ -116,7 +95,7 @@ export async function downloadFile(fileId, token, key) {
     const response = await fetch(PREFIX + "/download?fileId=" + fileId, requestOptions);
 
     if (response.status === 200) {
-        return response.arrayBuffer()
+        return response.body
     } else {
         throw new Error(response.statusText)
     }

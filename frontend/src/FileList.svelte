@@ -1,41 +1,28 @@
 <script>        
-    import { notify, timeSince, decryptFile } from './utils.js'
+    import { notify, timeSince, decryptFile, getSalt } from './utils.js'
     import { deleteFile, downloadFile } from './api.js';
     import { tokenStore, keyStore } from './store.js'
-    
+    import * as streamsaver from 'streamsaver'
 
     export let bucketData;
     export let uploading;
     let downloading
-
-
     let currentFileMenu;
 
     let download = async (e) => {
-        let id = e.currentTarget.dataset.id;
-        let filename = e.currentTarget.dataset.filename;
-
-        downloading = id;
-        downloadFile(id, $tokenStore)
-            .then((f) => decryptFile(f, $keyStore))
-            .then((b) => {
-                let elemx = window.document.createElement('a');
-                let blob = new Blob([b])
-                let uri = window.URL.createObjectURL(blob);
-                elemx.href = uri;
-                elemx.download = filename;
-                elemx.style.display = 'none';
-                document.body.appendChild(elemx);
-                elemx.click();
-                document.body.removeChild(elemx);
-                URL.revokeObjectURL(uri);
-            })
-            .catch((e) => {
-                console.log(e)
-                notify("could not download file")
-            })
-            .finally(() => downloading = false)
-
+        try {
+            let id = e.currentTarget.dataset.id;
+            let filename = e.currentTarget.dataset.filename;
+            downloading = id;
+            let stream = await downloadFile(id, $tokenStore)
+            let decryptedFile = await decryptFile(stream, $keyStore, getSalt(bucketData.id))
+            const fileStream = streamsaver.createWriteStream(filename)
+            decryptedFile.pipeTo(fileStream)
+        } catch (e) {
+            console.log(e)
+            notify("could not download file")
+        }
+        downloading = false
     }
 
     let deletef = (e) => {

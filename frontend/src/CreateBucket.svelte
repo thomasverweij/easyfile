@@ -13,14 +13,16 @@
     let setBucket = () => {
          createBucketAndLogin(password)
             .then(async (r) => {
-                console.log("test")
                 let key = await getKey(password, getSalt(r.id))
                 keyStore.set(key)
                 tokenStore.set(r.token);
                 bucketId = r.id;
                 loading = true
                 notify("Bucket created")
-            }).catch(() => notify("Could not create bucket"))
+            }).catch((e) => {
+                console.log(e)
+                notify("Could not create bucket")}
+            )
         }
 </script>
 
