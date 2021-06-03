@@ -25,12 +25,15 @@
             )
         }
 </script>
-
+<div id="notice">
+    Project is still in development. Bugs may occur.
+</div>
 <div id="welcome">
     Create private disposable buckets for sharing multiple files. 
     <ul>
         <li>Files and metadata are end-to-end encrypted in the browser.</li>
         <li>Buckets are automatically deleted after 24 hours.</li>
+        <li>Open source. <a href="https://github.com/thomasverweij/easyfile">Check out GitHub</a></li>
     </ul>
 </div>
 
@@ -66,6 +69,18 @@
     padding: 30px;
     box-shadow: 10px 10px rgb(77, 77, 77);
 }
+
+#notice {
+    position: fixed;
+    background-color: black;
+    font-size: .7em;
+    color: white;
+    padding: 5px;
+    left:0;
+    bottom: 0;
+    width: 100%;
+}
+
 
 #welcome {
     width: 50%;
