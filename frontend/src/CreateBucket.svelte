@@ -31,7 +31,6 @@
     <ul>
         <li>Files and metadata are end-to-end encrypted in the browser.</li>
         <li>Buckets are automatically deleted after 24 hours.</li>
-        <li>500Mb file size limit (due to browser encryption).</li>
     </ul>
 </div>
 
