@@ -3,6 +3,7 @@ package dev.tho.easyfile.security;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.tho.easyfile.model.Bucket;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -56,11 +57,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-
         String token = JWT.create()
                 .withSubject(((User) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign(HMAC512(SECRET.getBytes()));
+                .sign(HMAC512(JWT_SECRET.getBytes()));
         res.addHeader("Access-Control-Allow-Headers",HEADER_STRING);
         res.addHeader("Access-Control-Expose-Headers", HEADER_STRING);
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
