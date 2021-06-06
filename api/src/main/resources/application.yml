@@ -21,3 +21,6 @@ server:
 
 tus:
   upload-url: ${UPLOAD_URL:/api/upload}
+
+jwt:
+  accesskey: ${JWT_KEY}
